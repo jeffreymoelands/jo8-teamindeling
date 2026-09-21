@@ -353,7 +353,7 @@
   <div class="modal-backdrop" id="modalBackdrop" hidden>
     <div class="modal" id="exportModal" hidden>
       <div class="modal-head"><h3>Gegevens exporteren</h3><button class="modal-close" data-close type="button">✕</button></div>
-      <p class="modal-hint">Download dit bestand, of kopieer de tekst — bewaar het en gebruik "Importeren" om het later (of op een ander apparaat) weer in te laden.</p>
+      <p class="modal-hint">Alle informatie in één bestand: namen, teamindeling, niveaus én beschikbaarheid per speler. Download het, of kopieer de tekst — bewaar het en gebruik "Importeren" om het later (of op een ander apparaat) weer in te laden.</p>
       <textarea class="modal-textarea" id="exportText" readonly></textarea>
       <div class="modal-actions">
         <button class="io-btn primary" id="downloadJsonBtn" type="button">⬇ Download .json</button>
@@ -363,7 +363,7 @@
     </div>
     <div class="modal" id="importModal" hidden>
       <div class="modal-head"><h3>Gegevens importeren</h3><button class="modal-close" data-close type="button">✕</button></div>
-      <p class="modal-hint">Kies een eerder geëxporteerd .json-bestand, of plak de tekst hieronder. Dit vervangt de huidige teamindeling, niveaus en beschikbaarheid in deze browser.</p>
+      <p class="modal-hint">Kies een eerder geëxporteerd .json-bestand, of plak de tekst hieronder. Dit vervangt de volledige spelerslijst in deze browser — namen, teamindeling, niveaus én beschikbaarheid.</p>
       <input type="file" id="importFile" accept="application/json,.json" />
       <textarea class="modal-textarea" id="importText" placeholder="…of plak hier de geëxporteerde JSON-tekst"></textarea>
       <div class="modal-actions">
@@ -465,7 +465,9 @@
     return out;
   }
   // status codes: A = aanwezig, X = afwezig, U = onbekend (?), N = geen data
-  var PLAYERS = [
+  // Vaste standaardgegevens (waarmee de pagina begint / waarnaar "Reset" teruggaat).
+  // De actief gebruikte lijst staat in PLAYERS hieronder en kan via import volledig vervangen worden.
+  var PLAYERS_DEFAULT = [
     {id:"teun",     naam:"Teun Hamels",        cat:"O8", pas:"TJRB18I", team:"JO8-1", geb:"13-10-2019", niveau:"ervaren",  av:["A","A","A","A","A","A","A"]},
     {id:"jip",      naam:"Jip Künzel",         cat:"O8", pas:"TPPM28Q", team:"JO8-1", geb:"05-01-2019", niveau:"ervaren",  av:["A","A","A","A","A","A","A"]},
     {id:"fedde",    naam:"Fedde van der Lugt", cat:"O8", pas:"TKYK36P", team:"JO8-1", geb:"02-01-2019", niveau:"ervaren",  av:["A","A","A","A","A","X","A"]},
@@ -488,6 +490,12 @@
 
     {id:"james",    naam:"James Schram",       cat:"O8", pas:"TNQP13I", team:"Onbekend", geb:"22-03-2019", niveau:"beginner", av:["U","U","U","U","U","U","U"]}
   ];
+
+  function clonePlayers(list){
+    // alle velden zijn primitieven/strings, dus JSON-rondje is een veilige diepe kopie
+    return JSON.parse(JSON.stringify(list));
+  }
+  var PLAYERS = clonePlayers(PLAYERS_DEFAULT); // actief gebruikte spelerslijst (kan via import vervangen worden)
 
   var CAT_LABEL = {O8:"Onder 8", O9M:"Onder 9 Meiden", "?":"Onbekend"};
   var TEAM_ORDER = ["JO8-1","JO8-2","Onbekend"];
@@ -521,11 +529,49 @@
   }
   function isOlderCategory(p){ return p.cat.indexOf("O9") === 0; } // Onder 9 (nu: O9M) speelt een leeftijdsklasse hoger dan Onder 8
 
+  // Zet een los, mogelijk onvolledig/onbetrouwbaar object (bijv. uit een geïmporteerd bestand)
+  // om in een geldige speler, met veilige standaardwaarden voor ontbrekende/foute velden.
+  function sanitizePlayer(raw, index){
+    if(!raw || typeof raw !== "object") return null;
+    var id = (typeof raw.id === "string" && raw.id.trim()) ? raw.id.trim() : null;
+    if(!id) id = "speler-" + (index + 1) + "-" + Math.random().toString(36).slice(2, 7);
+    var av = Array.isArray(raw.av) ? raw.av.slice(0, 7) : [];
+    while(av.length < 7) av.push("N");
+    av = av.map(function(s){ return STATUS_CYCLE.indexOf(s) !== -1 ? s : "N"; });
+    return {
+      id: id,
+      naam: (typeof raw.naam === "string" && raw.naam.trim()) ? raw.naam.trim() : "Naamloos",
+      cat: (typeof raw.cat === "string" && raw.cat) ? raw.cat : "O8",
+      pas: (typeof raw.pas === "string") ? raw.pas : "",
+      geb: (typeof raw.geb === "string") ? raw.geb : "",
+      team: TEAM_ORDER.indexOf(raw.team) !== -1 ? raw.team : "Onbekend",
+      niveau: LEVEL_VALUE[raw.niveau] ? raw.niveau : null,
+      av: av
+    };
+  }
+  function sanitizePlayers(rawList){
+    if(!Array.isArray(rawList) || !rawList.length) return null;
+    var seen = {};
+    var out = [];
+    rawList.forEach(function(raw, i){
+      var p = sanitizePlayer(raw, i);
+      if(!p) return;
+      while(seen[p.id]) p.id = p.id + "-2"; // voorkom dubbele id's na een rommelig bestand
+      seen[p.id] = true;
+      out.push(p);
+    });
+    return out.length ? out : null;
+  }
+
   function loadState(){
     try{
       var raw = localStorage.getItem(STORAGE_KEY);
       if(raw){
         var saved = JSON.parse(raw);
+        if(saved && saved.players){
+          var sanitized = sanitizePlayers(saved.players);
+          if(sanitized) PLAYERS = sanitized;
+        }
         if(saved && saved.teamOf) state.teamOf = saved.teamOf;
         if(saved && saved.niveauOf){
           // alleen geldige niveaus (of een expliciet gewiste standaardwaarde = null) overnemen
@@ -540,7 +586,7 @@
     }catch(e){}
   }
   function saveState(){
-    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify({teamOf:state.teamOf, niveauOf:state.niveauOf, avOf:state.avOf})); }catch(e){}
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify({players:PLAYERS, teamOf:state.teamOf, niveauOf:state.niveauOf, avOf:state.avOf})); }catch(e){}
   }
   function teamOf(p){ return state.teamOf[p.id] || p.team; }
   function niveauOf(p){
@@ -941,10 +987,11 @@
 
   document.getElementById("resetBtn").addEventListener("click", function(){
     var akkoord = window.confirm(
-      "Alle wijzigingen die je in deze browser hebt gemaakt (teamindeling, niveaus, aangepaste beschikbaarheid) worden gewist. " +
+      "Alle wijzigingen die je in deze browser hebt gemaakt (spelers, teamindeling, niveaus, aangepaste beschikbaarheid) worden gewist. " +
       "De gegevens gaan terug naar de oorspronkelijke lijst uit de csv. Doorgaan?"
     );
     if(!akkoord) return;
+    PLAYERS = clonePlayers(PLAYERS_DEFAULT);
     state.teamOf = {};
     state.niveauOf = {};
     state.avOf = {};
@@ -974,12 +1021,26 @@
   });
 
   function exportPayload(){
+    // Volledige, op zichzelf staande momentopname: elke speler met zijn actuele
+    // (dus eventueel handmatig aangepaste) team, niveau en beschikbaarheid erin gebakken.
+    // Zo'n bestand kan direct weer ingeladen worden, ook op een ander apparaat of
+    // nadat de pagina zelf een keer bijgewerkt is.
+    var players = PLAYERS.map(function(p){
+      return {
+        id: p.id,
+        naam: p.naam,
+        cat: p.cat,
+        pas: p.pas,
+        geb: p.geb,
+        team: teamOf(p),
+        niveau: niveauOf(p),
+        av: DATES.map(function(_, i){ return avStatus(p, i); })
+      };
+    });
     return {
       _bron: "JO8 Teamindeling",
       _geexporteerdOp: new Date().toISOString(),
-      teamOf: state.teamOf,
-      niveauOf: state.niveauOf,
-      avOf: state.avOf
+      players: players
     };
   }
 
@@ -1139,6 +1200,27 @@
       statusEl.textContent = "Dit is geen geldige JSON — controleer of je het hele bestand hebt geplakt.";
       return;
     }
+    if(data.players){
+      // nieuw, volledig formaat: de hele spelerslijst (namen, teams, niveaus, beschikbaarheid) wordt vervangen
+      var sanitized = sanitizePlayers(data.players);
+      if(!sanitized){
+        statusEl.className = "modal-status err";
+        statusEl.textContent = "Kon geen geldige spelers vinden in dit bestand.";
+        return;
+      }
+      PLAYERS = sanitized;
+      state.teamOf = {};
+      state.niveauOf = {};
+      state.avOf = {};
+      saveState();
+      renderAll();
+      statusEl.className = "modal-status";
+      statusEl.textContent = "Geïmporteerd! " + sanitized.length + " spelers geladen (namen, teams, niveaus en beschikbaarheid).";
+      setTimeout(closeModals, 1200);
+      return;
+    }
+
+    // oud formaat (alleen teamOf/niveauOf/avOf): alleen wijzigingen t.o.v. de huidige spelerslijst
     var validIds = PLAYERS.map(function(p){ return p.id; });
     var newTeamOf = {}, newNiveauOf = {}, newAvOf = {};
     if(data.teamOf) Object.keys(data.teamOf).forEach(function(id){
