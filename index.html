@@ -130,6 +130,8 @@
   .io-btn:hover{border-color:var(--navy);}
   .io-btn.primary{background:var(--navy); color:var(--navy-ink); border-color:var(--navy);}
   .io-btn.primary:hover{opacity:.9;}
+  .io-btn.danger{color:var(--bad); border-color:var(--bad-soft);}
+  .io-btn.danger:hover{background:var(--bad-soft); border-color:var(--bad);}
 
   .modal-backdrop{
     position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:50;
@@ -320,6 +322,7 @@
     <div class="io-row">
       <button class="io-btn" id="exportBtn" type="button">⬇ Exporteren</button>
       <button class="io-btn" id="importBtn" type="button">⬆ Importeren</button>
+      <button class="io-btn danger" id="resetBtn" type="button">↺ Reset naar oorspronkelijke gegevens</button>
       <span class="hint">Bewaar je wijzigingen als bestand, of laad ze weer in op een ander apparaat/browser</span>
     </div>
   </div>
@@ -855,6 +858,22 @@
   }
 
   document.getElementById("balanceBtn").addEventListener("click", balanceTeams);
+
+  document.getElementById("resetBtn").addEventListener("click", function(){
+    var akkoord = window.confirm(
+      "Alle wijzigingen die je in deze browser hebt gemaakt (teamindeling, niveaus, aangepaste beschikbaarheid) worden gewist. " +
+      "De gegevens gaan terug naar de oorspronkelijke lijst uit de csv. Doorgaan?"
+    );
+    if(!akkoord) return;
+    state.teamOf = {};
+    state.niveauOf = {};
+    state.avOf = {};
+    state.scenario = {girlsTogether:false, ageTogether:false, stackBest:false};
+    state.filter = "Alle";
+    state.matchIndex = 0;
+    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+    renderAll();
+  });
 
   // ---- export / import ----
   function openModal(id){
