@@ -417,27 +417,27 @@
   var DATES = ["31 okt","7 nov","14 nov","21 nov","28 nov","5 dec","12 dec"];
   // status codes: A = aanwezig, X = afwezig, U = onbekend (?), N = geen data
   var PLAYERS = [
-    {id:"teun",     naam:"Teun Hamels",        cat:"O8", pas:"TJRB18I", team:"JO8-1", geb:"13-10-2019", av:["A","A","A","A","A","A","A"]},
-    {id:"jip",      naam:"Jip Künzel",         cat:"O8", pas:"TPPM28Q", team:"JO8-1", geb:"05-01-2019", av:["A","A","A","A","A","A","A"]},
-    {id:"fedde",    naam:"Fedde van der Lugt", cat:"O8", pas:"TKYK36P", team:"JO8-1", geb:"02-01-2019", av:["A","A","A","A","A","X","A"]},
-    {id:"niek",     naam:"Niek Stoffelen",     cat:"O8", pas:"TPBV276", team:"JO8-1", geb:"18-01-2019", av:["A","A","X","A","A","X","A"]},
-    {id:"bram",     naam:"Bram Patist",        cat:"O8", pas:"TQLC13J", team:"JO8-1", geb:"30-04-2019", av:["A","X","A","A","X","X","A"]},
-    {id:"olivier",  naam:"Olivier Mermans",    cat:"O8", pas:"TQQN32C", team:"JO8-1", geb:"15-04-2019", av:["A","A","A","A","A","A","A"]},
-    {id:"benjamin", naam:"Benjamin Verstrae…", cat:"O8", pas:"TKJL05D", team:"JO8-1", geb:"22-07-2019", av:["X","X","X","X","X","X","X"]},
-    {id:"lis",      naam:"Lis Moelands",       cat:"O9M", pas:"TNQP10P", team:"JO8-1", geb:"14-11-2018", av:["X","A","X","A","A","A","A"]},
-    {id:"jytte",    naam:"Jytte Dierckx",      cat:"O9M", pas:"TNXY55O", team:"JO8-1", geb:"21-03-2019", av:["A","A","X","A","A","A","A"]},
+    {id:"teun",     naam:"Teun Hamels",        cat:"O8", pas:"TJRB18I", team:"JO8-1", geb:"13-10-2019", niveau:"ervaren",  av:["A","A","A","A","A","A","A"]},
+    {id:"jip",      naam:"Jip Künzel",         cat:"O8", pas:"TPPM28Q", team:"JO8-1", geb:"05-01-2019", niveau:"ervaren",  av:["A","A","A","A","A","A","A"]},
+    {id:"fedde",    naam:"Fedde van der Lugt", cat:"O8", pas:"TKYK36P", team:"JO8-1", geb:"02-01-2019", niveau:"ervaren",  av:["A","A","A","A","A","X","A"]},
+    {id:"niek",     naam:"Niek Stoffelen",     cat:"O8", pas:"TPBV276", team:"JO8-1", geb:"18-01-2019", niveau:"beginner", av:["A","A","X","A","A","X","A"]},
+    {id:"bram",     naam:"Bram Patist",        cat:"O8", pas:"TQLC13J", team:"JO8-1", geb:"30-04-2019", niveau:"beginner", av:["A","X","A","A","X","X","A"]},
+    {id:"olivier",  naam:"Olivier Mermans",    cat:"O8", pas:"TQQN32C", team:"JO8-1", geb:"15-04-2019", niveau:"beginner", av:["A","A","A","A","A","A","A"]},
+    {id:"benjamin", naam:"Benjamin Verstrae…", cat:"O8", pas:"TKJL05D", team:"JO8-1", geb:"22-07-2019", niveau:"beginner", av:["X","X","X","X","X","X","X"]},
+    {id:"lis",      naam:"Lis Moelands",       cat:"O9M", pas:"TNQP10P", team:"JO8-1", geb:"14-11-2018", niveau:"ervaren",  av:["X","A","X","A","A","A","A"]},
+    {id:"jytte",    naam:"Jytte Dierckx",      cat:"O9M", pas:"TNXY55O", team:"JO8-1", geb:"21-03-2019", niveau:"ervaren",  av:["A","A","X","A","A","A","A"]},
 
-    {id:"thomas",   naam:"Thomas Hoogsteder",  cat:"O8", pas:"TDWS88P", team:"JO8-2", geb:"20-03-2019", av:["X","A","A","A","A","A","A"]},
-    {id:"julesvl",  naam:"Jules van Loon",     cat:"O8", pas:"TLNH225", team:"JO8-2", geb:"23-05-2019", av:["A","X","A","A","A","X","A"]},
-    {id:"jay",      naam:"Jay Yoffe",          cat:"O8", pas:"TPRT63E", team:"JO8-2", geb:"04-04-2019", av:["A","X","A","A","A","A","A"]},
-    {id:"julesd",   naam:"Jules Degenaar",     cat:"O8", pas:"TNVS52B", team:"JO8-2", geb:"12-02-2019", av:["A","A","A","A","A","X","X"]},
-    {id:"eden",     naam:"Eden Dekker",        cat:"O8", pas:"TKQN19F", team:"JO8-2", geb:"22-04-2019", av:["A","A","A","A","A","X","A"]},
-    {id:"rick",     naam:"Rick Koijen",        cat:"O8", pas:"",        team:"JO8-2", geb:"19-08-2019", av:["N","N","N","N","N","N","N"]},
-    {id:"jaimy",    naam:"Jaimy Beerens",      cat:"O8", pas:"TRBH663", team:"JO8-2", geb:"05-07-2019", av:["A","A","A","A","A","A","A"]},
-    {id:"lien",     naam:"Lien Roelen",        cat:"O9M", pas:"TPRD02D", team:"JO8-2", geb:"10-09-2019", av:["A","A","A","X","A","A","A"]},
-    {id:"veronica", naam:"Veronica Kusters",   cat:"O9M", pas:"TPPM30V", team:"JO8-2", geb:"11-06-2019", av:["A","X","A","A","A","A","X"]},
+    {id:"thomas",   naam:"Thomas Hoogsteder",  cat:"O8", pas:"TDWS88P", team:"JO8-2", geb:"20-03-2019", niveau:"ervaren",  av:["X","A","A","A","A","A","A"]},
+    {id:"julesvl",  naam:"Jules van Loon",     cat:"O8", pas:"TLNH225", team:"JO8-2", geb:"23-05-2019", niveau:"ervaren",  av:["A","X","A","A","A","X","A"]},
+    {id:"jay",      naam:"Jay Yoffe",          cat:"O8", pas:"TPRT63E", team:"JO8-2", geb:"04-04-2019", niveau:"beginner", av:["A","X","A","A","A","A","A"]},
+    {id:"julesd",   naam:"Jules Degenaar",     cat:"O8", pas:"TNVS52B", team:"JO8-2", geb:"12-02-2019", niveau:"beginner", av:["A","A","A","A","A","X","X"]},
+    {id:"eden",     naam:"Eden Dekker",        cat:"O8", pas:"TKQN19F", team:"JO8-2", geb:"22-04-2019", niveau:"beginner", av:["A","A","A","A","A","X","A"]},
+    {id:"rick",     naam:"Rick Koijen",        cat:"O8", pas:"",        team:"JO8-2", geb:"19-08-2019", niveau:"beginner", av:["N","N","N","N","N","N","N"]},
+    {id:"jaimy",    naam:"Jaimy Beerens",      cat:"O8", pas:"TRBH663", team:"JO8-2", geb:"05-07-2019", niveau:"beginner", av:["A","A","A","A","A","A","A"]},
+    {id:"lien",     naam:"Lien Roelen",        cat:"O9M", pas:"TPRD02D", team:"JO8-2", geb:"10-09-2019", niveau:"beginner", av:["A","A","A","X","A","A","A"]},
+    {id:"veronica", naam:"Veronica Kusters",   cat:"O9M", pas:"TPPM30V", team:"JO8-2", geb:"11-06-2019", niveau:"beginner", av:["A","X","A","A","A","A","X"]},
 
-    {id:"james",    naam:"James Schram",       cat:"O8", pas:"TNQP13I", team:"Onbekend", geb:"22-03-2019", av:["U","U","U","U","U","U","U"]}
+    {id:"james",    naam:"James Schram",       cat:"O8", pas:"TNQP13I", team:"Onbekend", geb:"22-03-2019", niveau:"beginner", av:["U","U","U","U","U","U","U"]}
   ];
 
   var CAT_LABEL = {O8:"Onder 8", O9M:"Onder 9 Meiden", "?":"Onbekend"};
@@ -479,9 +479,11 @@
         var saved = JSON.parse(raw);
         if(saved && saved.teamOf) state.teamOf = saved.teamOf;
         if(saved && saved.niveauOf){
-          // alleen geldige niveaus overnemen (oudere versie gebruikte een 1-5 sterrenschaal)
+          // alleen geldige niveaus (of een expliciet gewiste standaardwaarde = null) overnemen
+          // (oudere versie gebruikte een 1-5 sterrenschaal, die negeren we)
           Object.keys(saved.niveauOf).forEach(function(id){
-            if(LEVEL_VALUE[saved.niveauOf[id]]) state.niveauOf[id] = saved.niveauOf[id];
+            var v = saved.niveauOf[id];
+            if(v === null || LEVEL_VALUE[v]) state.niveauOf[id] = v;
           });
         }
         if(saved && saved.avOf) state.avOf = saved.avOf;
@@ -492,7 +494,11 @@
     try{ localStorage.setItem(STORAGE_KEY, JSON.stringify({teamOf:state.teamOf, niveauOf:state.niveauOf, avOf:state.avOf})); }catch(e){}
   }
   function teamOf(p){ return state.teamOf[p.id] || p.team; }
-  function niveauOf(p){ return state.niveauOf[p.id] || null; } // "beginner" | "ervaren" | null
+  function niveauOf(p){
+    // een expliciete keuze (ook een bewust gewiste, opgeslagen als null) gaat altijd voor de standaardwaarde uit de data
+    if(Object.prototype.hasOwnProperty.call(state.niveauOf, p.id)) return state.niveauOf[p.id];
+    return p.niveau || null;
+  } // "beginner" | "ervaren" | null
   function niveauValue(p){ var n = niveauOf(p); return n ? LEVEL_VALUE[n] : DEFAULT_LEVEL_VALUE; }
 
   function initials(naam){
@@ -1022,7 +1028,8 @@
       if(validIds.indexOf(id) !== -1 && TEAM_ORDER.indexOf(data.teamOf[id]) !== -1) newTeamOf[id] = data.teamOf[id];
     });
     if(data.niveauOf) Object.keys(data.niveauOf).forEach(function(id){
-      if(validIds.indexOf(id) !== -1 && LEVEL_VALUE[data.niveauOf[id]]) newNiveauOf[id] = data.niveauOf[id];
+      var v = data.niveauOf[id];
+      if(validIds.indexOf(id) !== -1 && (v === null || LEVEL_VALUE[v])) newNiveauOf[id] = v;
     });
     if(data.avOf) Object.keys(data.avOf).forEach(function(key){
       if(STATUS_CYCLE.indexOf(data.avOf[key]) !== -1) newAvOf[key] = data.avOf[key];
