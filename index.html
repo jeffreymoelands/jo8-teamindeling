@@ -352,6 +352,19 @@
         <span class="modal-status" id="importStatus"></span>
       </div>
     </div>
+    <div class="modal" id="waModal" hidden>
+      <div class="modal-head"><h3 id="waTitle">WhatsApp-bericht</h3><button class="modal-close" data-close type="button">✕</button></div>
+      <p class="modal-hint">Alleen de spelers die aanwezig zijn worden genoemd — klaar om te plakken in de ouder-appgroep.</p>
+      <div class="scenario-row">
+        <span class="scenario-label">Team</span>
+        <div class="seg" id="segWaScope"></div>
+      </div>
+      <textarea class="modal-textarea" id="waText" readonly></textarea>
+      <div class="modal-actions">
+        <button class="io-btn primary" id="waCopyBtn" type="button">Kopieer naar klembord</button>
+        <span class="modal-status" id="waStatus"></span>
+      </div>
+    </div>
   </div>
 
   <div class="filters" id="filters"></div>
@@ -822,8 +835,15 @@
     }).join("") + '</div>';
 
     el.innerHTML =
-      '<h3 style="font-size:16px;margin-bottom:10px;">Wedstrijd '+DATES[i]+'</h3>' +
+      '<div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:10px;">' +
+        '<h3 style="font-size:16px;">Wedstrijd '+DATES[i]+'</h3>' +
+        '<button class="io-btn primary" id="waBtn" type="button">📋 WhatsApp-bericht</button>' +
+      '</div>' +
       summary + grid;
+
+    document.getElementById("waBtn").addEventListener("click", function(){
+      openWhatsappModal(i);
+    });
   }
 
   function renderTable(){
@@ -894,6 +914,7 @@
     document.getElementById("modalBackdrop").hidden = true;
     document.getElementById("exportModal").hidden = true;
     document.getElementById("importModal").hidden = true;
+    document.getElementById("waModal").hidden = true;
   }
   document.getElementById("modalBackdrop").addEventListener("click", function(ev){
     if(ev.target.id === "modalBackdrop") closeModals();
@@ -964,9 +985,10 @@
     }
   });
 
-  document.getElementById("copyJsonBtn").addEventListener("click", function(){
-    var text = document.getElementById("exportText").value;
-    var statusEl = document.getElementById("exportStatus");
+  function copyTextareaToClipboard(textareaId, statusId){
+    var ta = document.getElementById(textareaId);
+    var statusEl = document.getElementById(statusId);
+    var text = ta.value;
     function ok(){ statusEl.className = "modal-status"; statusEl.textContent = "Gekopieerd naar klembord."; }
     function fail(){
       statusEl.className = "modal-status err";
@@ -975,16 +997,61 @@
     try{
       if(navigator.clipboard && navigator.clipboard.writeText){
         navigator.clipboard.writeText(text).then(ok, function(){
-          var ta = document.getElementById("exportText");
           ta.select();
           try{ document.execCommand("copy") ? ok() : fail(); }catch(e){ fail(); }
         });
       } else {
-        var ta = document.getElementById("exportText");
         ta.select();
         try{ document.execCommand("copy") ? ok() : fail(); }catch(e){ fail(); }
       }
     }catch(e){ fail(); }
+  }
+
+  document.getElementById("copyJsonBtn").addEventListener("click", function(){
+    copyTextareaToClipboard("exportText", "exportStatus");
+  });
+
+  // ---- WhatsApp-bericht ----
+  var WA_SCOPE_OPTIONS = [
+    {v:"Alle", label:"Alle"},
+    {v:"JO8-1", label:"JO8-1"},
+    {v:"JO8-2", label:"JO8-2"}
+  ];
+  state.waScope = "Alle"; // niet opgeslagen, alleen voor terwijl de modal open is
+  state.waMatchIndex = 0;
+
+  function buildWhatsappMessage(dateIndex, scope){
+    var teams = scope === "Alle" ? ["JO8-1", "JO8-2"] : [scope];
+    var blocks = teams.map(function(team){
+      var aanwezig = PLAYERS.filter(function(p){
+        return teamOf(p) === team && avStatus(p, dateIndex) === "A";
+      }).sort(function(a,b){ return a.naam.localeCompare(b.naam); });
+      var lijst = aanwezig.length
+        ? "✅ Aanwezig (" + aanwezig.length + "): " + aanwezig.map(function(p){ return p.naam; }).join(", ")
+        : "Nog niemand aanwezig.";
+      return "*" + team + " — wedstrijd " + DATES[dateIndex] + "*\n" + lijst;
+    });
+    return blocks.join("\n\n");
+  }
+
+  function renderWhatsappModal(){
+    document.getElementById("waTitle").textContent = "WhatsApp-bericht — wedstrijd " + DATES[state.waMatchIndex];
+    renderSeg("segWaScope", WA_SCOPE_OPTIONS, state.waScope, function(v){
+      state.waScope = v; renderWhatsappModal();
+    });
+    document.getElementById("waText").value = buildWhatsappMessage(state.waMatchIndex, state.waScope);
+    document.getElementById("waStatus").textContent = "";
+    document.getElementById("waStatus").className = "modal-status";
+  }
+
+  function openWhatsappModal(dateIndex){
+    state.waMatchIndex = dateIndex;
+    renderWhatsappModal();
+    openModal("waModal");
+  }
+
+  document.getElementById("waCopyBtn").addEventListener("click", function(){
+    copyTextareaToClipboard("waText", "waStatus");
   });
 
   document.getElementById("importBtn").addEventListener("click", function(){
