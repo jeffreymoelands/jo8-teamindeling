@@ -384,7 +384,11 @@
         <div class="seg" id="segAge"></div>
       </div>
       <div class="scenario-row">
-        <span class="scenario-label">Niveau</span>
+        <span class="scenario-label">Balanceren op</span>
+        <div class="seg" id="segMetric"></div>
+      </div>
+      <div class="scenario-row">
+        <span class="scenario-label" id="levelRowLabel">Niveau</span>
         <div class="seg" id="segLevel"></div>
       </div>
       <div class="board-actions">
@@ -465,7 +469,7 @@
   var LEVEL_VALUE = {beginner:1, ervaren:2};
   var LEVEL_LABEL = {beginner:"Beginner", ervaren:"Ervaren"};
   var DEFAULT_LEVEL_VALUE = 1.5; // nog niet beoordeeld: telt neutraal mee
-  var state = {teamOf:{}, niveauOf:{}, avOf:{}, filter:"Alle", matchIndex:0, scenario:{girlsTogether:false, ageTogether:false, stackBest:false}};
+  var state = {teamOf:{}, niveauOf:{}, avOf:{}, filter:"Alle", matchIndex:0, scenario:{girlsTogether:false, ageTogether:false, stackBest:false, metric:"niveau"}};
   var STATUS_CYCLE = ["A","X","U","N"];
   function avKey(p, i){ return p.id + "_" + i; }
   function avStatus(p, i){
@@ -591,10 +595,24 @@
     {v:false, label:"Verdelen"},
     {v:true,  label:"Samen"}
   ];
-  var LEVEL_OPTIONS = [
-    {v:false, label:"Gelijk verdelen"},
-    {v:true,  label:"Meest ervaren bij elkaar"}
+  var METRIC_OPTIONS = [
+    {v:"niveau",       label:"Niveau"},
+    {v:"aanwezigheid", label:"Aanwezigheid"}
   ];
+  function levelOptionsFor(metric){
+    return metric === "aanwezigheid"
+      ? [{v:false, label:"Gelijk verdelen"}, {v:true, label:"Meest aanwezig bij elkaar"}]
+      : [{v:false, label:"Gelijk verdelen"}, {v:true, label:"Meest ervaren bij elkaar"}];
+  }
+
+  function attendanceValue(p){
+    var n = 0;
+    for(var i=0; i<DATES.length; i++){ if(avStatus(p, i) === "A") n++; }
+    return n;
+  }
+  function metricValue(p, metric){
+    return metric === "aanwezigheid" ? attendanceValue(p) : niveauValue(p);
+  }
 
   function renderSeg(containerId, options, current, onPick){
     var el = document.getElementById(containerId);
@@ -617,9 +635,15 @@
     parts.push(opts.ageTogether
       ? "De oudste spelers (Onder 9) blijven ook samen in één team."
       : "Leeftijdscategorieën worden gemengd over beide teams.");
-    parts.push(opts.stackBest
-      ? "De meest ervaren spelers worden zo veel mogelijk in één team gezet (één ervaren, één minder ervaren team)."
-      : "De sterkte wordt zo gelijk mogelijk over beide teams verdeeld.");
+    if(opts.metric === "aanwezigheid"){
+      parts.push(opts.stackBest
+        ? "De spelers die het vaakst aanwezig zijn, worden zo veel mogelijk in één team gezet."
+        : "Spelers worden zo verdeeld dat beide teams over het seizoen ongeveer even vaak evenveel aanwezige spelers hebben.");
+    } else {
+      parts.push(opts.stackBest
+        ? "De meest ervaren spelers worden zo veel mogelijk in één team gezet (één ervaren, één minder ervaren team)."
+        : "De sterkte wordt zo gelijk mogelijk over beide teams verdeeld.");
+    }
     return parts.join(" ");
   }
 
@@ -630,7 +654,11 @@
     renderSeg("segAge", AGE_OPTIONS, state.scenario.ageTogether, function(v){
       state.scenario.ageTogether = v; renderScenarioPanel();
     });
-    renderSeg("segLevel", LEVEL_OPTIONS, state.scenario.stackBest, function(v){
+    renderSeg("segMetric", METRIC_OPTIONS, state.scenario.metric, function(v){
+      state.scenario.metric = v; renderScenarioPanel();
+    });
+    document.getElementById("levelRowLabel").textContent = state.scenario.metric === "aanwezigheid" ? "Aanwezigheid" : "Niveau";
+    renderSeg("segLevel", levelOptionsFor(state.scenario.metric), state.scenario.stackBest, function(v){
       state.scenario.stackBest = v; renderScenarioPanel();
     });
     document.getElementById("scenarioNote").textContent = buildScenarioNote(state.scenario);
@@ -646,7 +674,7 @@
     var counts = {"JO8-1":0, "JO8-2":0};
     function place(p, team){
       state.teamOf[p.id] = team;
-      sums[team] += niveauValue(p);
+      sums[team] += metricValue(p, opts.metric);
       counts[team]++;
     }
 
@@ -668,10 +696,10 @@
       pool = eligible.slice();
     }
 
-    var sorted = pool.slice().sort(function(a,b){ return niveauValue(b) - niveauValue(a); });
+    var sorted = pool.slice().sort(function(a,b){ return metricValue(b, opts.metric) - metricValue(a, opts.metric); });
 
     if(opts.stackBest){
-      // sterkste spelers zo veel mogelijk samen in het team met de meeste ruimte
+      // hoogste waarde (niveau of aanwezigheid) zo veel mogelijk samen in het team met de meeste ruimte
       var remain = {"JO8-1": cap["JO8-1"]-counts["JO8-1"], "JO8-2": cap["JO8-2"]-counts["JO8-2"]};
       var primary = remain["JO8-1"] >= remain["JO8-2"] ? "JO8-1" : "JO8-2";
       var secondary = primary === "JO8-1" ? "JO8-2" : "JO8-1";
@@ -898,7 +926,7 @@
     state.teamOf = {};
     state.niveauOf = {};
     state.avOf = {};
-    state.scenario = {girlsTogether:false, ageTogether:false, stackBest:false};
+    state.scenario = {girlsTogether:false, ageTogether:false, stackBest:false, metric:"niveau"};
     state.filter = "Alle";
     state.matchIndex = 0;
     try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
