@@ -1,0 +1,1028 @@
+<title>JO8 Teamindeling</title>
+<meta name="description" content="Overzicht van de JO8-spelers van Chaam: teamindeling JO8-1/JO8-2, spelerspassen en beschikbaarheid per speeldatum.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #f4f2ec;
+    --panel: #ffffff;
+    --panel-2: #eceadf;
+    --ink: #1c2233;
+    --ink-dim: #5b6178;
+    --line: #dcd8ca;
+
+    --navy: #263259;
+    --navy-ink: #ffffff;
+
+    --team1: #1f7a63;      /* JO8-1 */
+    --team1-soft: #dcefe8;
+    --team2: #c8622a;      /* JO8-2 */
+    --team2-soft: #f6e3d3;
+    --team0: #6b6f80;      /* onbekend */
+    --team0-soft: #e7e6ea;
+
+    --ok: #2f8f5b;
+    --ok-soft: #dcefe1;
+    --bad: #c1493f;
+    --bad-soft: #f6dfdc;
+    --unk: #b8892a;
+    --unk-soft: #f2e6cd;
+    --nodata: #aeb2c1;
+    --nodata-soft: #eceaf1;
+
+    --shadow: 0 1px 2px rgba(28,34,51,.06), 0 8px 24px -12px rgba(28,34,51,.18);
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg: #14172233;
+      --bg: #14161f;
+      --panel: #1c1f2b;
+      --panel-2: #232739;
+      --ink: #eef0f6;
+      --ink-dim: #a6abc0;
+      --line: #333a52;
+
+      --navy: #3a4a82;
+      --navy-ink: #ffffff;
+
+      --team1: #3fb894;
+      --team1-soft: #17352c;
+      --team2: #e08849;
+      --team2-soft: #3a2718;
+      --team0: #9498ab;
+      --team0-soft: #2a2e3f;
+
+      --ok: #4cbb7f;
+      --ok-soft: #163524;
+      --bad: #e07068;
+      --bad-soft: #3a1e1c;
+      --unk: #e0b855;
+      --unk-soft: #3a2f16;
+      --nodata: #565c73;
+      --nodata-soft: #232739;
+
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg: #14161f;
+    --panel: #1c1f2b;
+    --panel-2: #232739;
+    --ink: #eef0f6;
+    --ink-dim: #a6abc0;
+    --line: #333a52;
+
+    --navy: #3a4a82;
+    --navy-ink: #ffffff;
+
+    --team1: #3fb894;
+    --team1-soft: #17352c;
+    --team2: #e08849;
+    --team2-soft: #3a2718;
+    --team0: #9498ab;
+    --team0-soft: #2a2e3f;
+
+    --ok: #4cbb7f;
+    --ok-soft: #163524;
+    --bad: #e07068;
+    --bad-soft: #3a1e1c;
+    --unk: #e0b855;
+    --unk-soft: #3a2f16;
+    --nodata: #565c73;
+    --nodata-soft: #232739;
+
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    padding:0 16px 48px;
+  }
+  .wrap{max-width:1040px;margin:0 auto;}
+
+  h1,h2,h3{font-family:'Oswald',system-ui,sans-serif; letter-spacing:.01em; text-wrap:balance; margin:0;}
+
+  /* header */
+  .header{padding:28px 0 20px; border-bottom:1px solid var(--line);}
+  .eyebrow{font-family:'Oswald',sans-serif; font-size:12.5px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-dim);}
+  .title{font-size:clamp(28px,5vw,40px); font-weight:700; color:var(--ink); margin-top:4px;}
+  .sub{color:var(--ink-dim); font-size:14.5px; margin-top:8px; max-width:56ch; line-height:1.5;}
+
+  .stats{display:flex; gap:10px; margin-top:22px; flex-wrap:wrap;}
+  .stat{flex:1 1 130px; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px 14px; box-shadow:var(--shadow);}
+  .stat .n{font-family:'Oswald',sans-serif; font-size:26px; font-weight:700; font-variant-numeric:tabular-nums; line-height:1;}
+  .stat .l{font-size:12px; color:var(--ink-dim); margin-top:4px;}
+  .dot{display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:6px; vertical-align:1px;}
+
+  /* export/import */
+  .io-row{display:flex; align-items:center; gap:10px; margin-top:14px; flex-wrap:wrap;}
+  .io-btn{
+    font-family:'Oswald',sans-serif; font-size:12.5px; font-weight:600; letter-spacing:.02em;
+    border:1px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer;
+    padding:7px 13px; border-radius:9px;
+  }
+  .io-btn:hover{border-color:var(--navy);}
+  .io-btn.primary{background:var(--navy); color:var(--navy-ink); border-color:var(--navy);}
+  .io-btn.primary:hover{opacity:.9;}
+
+  .modal-backdrop{
+    position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:50;
+    display:flex; align-items:center; justify-content:center; padding:16px;
+  }
+  .modal{
+    background:var(--panel); border-radius:16px; border:1px solid var(--line);
+    max-width:520px; width:100%; padding:18px; box-shadow:var(--shadow);
+    display:flex; flex-direction:column; gap:12px; max-height:86vh; overflow-y:auto;
+  }
+  .modal-head{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+  .modal-head h3{font-size:17px; font-weight:600;}
+  .modal-close{border:none; background:none; color:var(--ink-dim); font-size:16px; cursor:pointer; padding:2px 6px;}
+  .modal-close:hover{color:var(--ink);}
+  .modal-hint{font-size:12.5px; color:var(--ink-dim); line-height:1.5; margin:0;}
+  .modal-textarea{
+    width:100%; min-height:130px; resize:vertical; border:1px solid var(--line); border-radius:10px;
+    background:var(--panel-2); color:var(--ink); font-family:'JetBrains Mono',monospace; font-size:11.5px;
+    padding:10px; box-sizing:border-box;
+  }
+  .modal-actions{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .modal-status{font-size:12px; color:var(--ok);}
+  .modal-status.err{color:var(--bad);}
+  #importFile{font-size:12.5px; color:var(--ink-dim);}
+
+  /* filter bar */
+  .filters{display:flex; gap:8px; margin:24px 0 4px; flex-wrap:wrap;}
+  .chip{
+    font-family:'Oswald',sans-serif; font-size:13px; font-weight:600; letter-spacing:.02em;
+    border:1px solid var(--line); background:var(--panel); color:var(--ink-dim);
+    padding:7px 14px; border-radius:999px; cursor:pointer; transition:.15s;
+  }
+  .chip:hover{border-color:var(--ink-dim);}
+  .chip.active{background:var(--navy); color:var(--navy-ink); border-color:var(--navy);}
+
+  section{margin-top:32px;}
+  .section-head{display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:12px; flex-wrap:wrap;}
+  .section-head h2{font-size:19px; font-weight:600;}
+  .hint{font-size:12.5px; color:var(--ink-dim);}
+
+  /* board */
+  .board{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .board-bucket{background:var(--panel); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow); overflow:hidden;}
+  .bucket-head{padding:12px 14px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line);}
+  .bucket-name{font-family:'Oswald',sans-serif; font-weight:700; font-size:15px; display:flex; align-items:center; gap:8px;}
+  .bucket-count{font-size:12px; color:var(--ink-dim); font-variant-numeric:tabular-nums;}
+  .bucket-list{padding:6px; min-height:64px; border-radius:10px; transition:background .12s, box-shadow .12s;}
+  .bucket-list.drag-over{background:var(--panel-2); box-shadow:inset 0 0 0 2px var(--navy);}
+  .bucket-empty{padding:16px; text-align:center; color:var(--ink-dim); font-size:13px; pointer-events:none;}
+
+  .player{
+    display:flex; align-items:center; gap:10px; padding:8px 8px; border-radius:10px; cursor:grab;
+    transition:background .12s, opacity .12s, transform .12s;
+  }
+  .player:hover{background:var(--panel-2);}
+  .player:active{cursor:grabbing;}
+  .player.dragging{opacity:.4;}
+  .player .grip{flex:none; color:var(--ink-dim); font-size:13px; line-height:1; letter-spacing:1px; user-select:none;}
+  .player .avatar{
+    width:32px; height:32px; border-radius:50%; flex:none;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Oswald',sans-serif; font-weight:700; font-size:13px; color:#fff;
+  }
+  .player .name{font-weight:600; font-size:14px; flex:1; min-width:0;}
+  .player .cat{font-size:11px; color:var(--ink-dim); display:block; font-weight:400;}
+  .spark{display:flex; gap:3px; flex:none;}
+  .spark i{width:6px; height:6px; border-radius:50%; display:block;}
+  .move-btn{
+    flex:none; border:1px solid var(--line); background:var(--panel); color:var(--ink-dim);
+    font-size:11px; font-family:'Oswald',sans-serif; font-weight:600; padding:4px 8px; border-radius:7px; cursor:pointer;
+  }
+  .move-btn:hover{border-color:var(--navy); color:var(--navy);}
+
+  .level{display:flex; gap:0; flex:none; border:1px solid var(--line); border-radius:8px; overflow:hidden;}
+  .level button{
+    border:none; background:var(--panel); color:var(--ink-dim); cursor:pointer;
+    font-family:'Oswald',sans-serif; font-size:10.5px; font-weight:600; letter-spacing:.02em;
+    padding:5px 8px; line-height:1;
+  }
+  .level button + button{border-left:1px solid var(--line);}
+  .level button.on-beginner{background:var(--ok); color:#fff;}
+  .level button.on-ervaren{background:var(--navy); color:var(--navy-ink);}
+
+  .scenario-panel{
+    background:var(--panel); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow);
+    padding:14px; margin-bottom:14px; display:flex; flex-direction:column; gap:12px;
+  }
+  .scenario-row{display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
+  .scenario-label{font-family:'Oswald',sans-serif; font-size:12px; font-weight:600; letter-spacing:.03em; color:var(--ink-dim); flex:none; width:76px;}
+  .seg{display:flex; border:1px solid var(--line); border-radius:9px; overflow:hidden;}
+  .seg button{
+    font-family:'Oswald',sans-serif; font-size:12.5px; font-weight:600; letter-spacing:.01em;
+    border:none; background:var(--panel); color:var(--ink-dim); padding:7px 12px; cursor:pointer;
+  }
+  .seg button + button{border-left:1px solid var(--line);}
+  .seg button.active{background:var(--navy); color:var(--navy-ink);}
+
+  .board-actions{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .balance-btn{
+    font-family:'Oswald',sans-serif; font-size:12.5px; font-weight:600; letter-spacing:.02em;
+    border:1px solid var(--navy); background:var(--navy); color:var(--navy-ink);
+    padding:7px 13px; border-radius:9px; cursor:pointer;
+  }
+  .balance-btn:hover{opacity:.9;}
+  .balance-note{font-size:12px; color:var(--ink-dim);}
+  .avg-badge{
+    font-size:11.5px; font-weight:600; color:var(--ink-dim); font-variant-numeric:tabular-nums;
+    display:flex; align-items:center; gap:4px;
+  }
+  .avg-badge.off{color:var(--bad);}
+
+  /* match tabs */
+  .match-tabs{display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:14px;}
+  .match-tab{
+    flex:none; font-family:'Oswald',sans-serif; font-size:13px; font-weight:600;
+    border:1px solid var(--line); background:var(--panel); color:var(--ink-dim);
+    padding:9px 14px; border-radius:10px; cursor:pointer; text-align:center; white-space:nowrap;
+    display:flex; flex-direction:column; gap:2px; line-height:1.15;
+  }
+  .match-tab .n{font-size:10.5px; font-weight:500; letter-spacing:.02em; color:inherit; opacity:.75;}
+  .match-tab.active{background:var(--navy); color:var(--navy-ink); border-color:var(--navy);}
+  .match-tab.active .n{opacity:.9;}
+  .team-counts{display:flex; align-items:center; gap:4px; font-variant-numeric:tabular-nums;}
+  .team-counts .dot{width:7px; height:7px; margin-right:3px;}
+  .team-counts .dot:last-of-type{margin-left:5px;}
+
+  .match-summary{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;}
+  .match-summary .pill{
+    font-family:'Oswald',sans-serif; font-size:13px; font-weight:600; padding:8px 14px; border-radius:10px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .match-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .match-col{background:var(--panel); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow); overflow:hidden;}
+  .match-col-head{padding:11px 14px; border-bottom:1px solid var(--line); font-family:'Oswald',sans-serif; font-weight:700; font-size:14px; display:flex; align-items:center; gap:8px;}
+  .match-row{display:flex; align-items:center; gap:10px; padding:8px 14px; border-bottom:1px solid var(--line); font-size:13.5px;}
+  .match-row:last-child{border-bottom:none;}
+  .match-row .status-badge{
+    margin-left:auto; flex:none; font-family:'Oswald',sans-serif; font-size:11px; font-weight:700;
+    padding:3px 9px; border-radius:999px;
+  }
+  @media (max-width:640px){ .match-grid{grid-template-columns:1fr;} }
+
+  /* table */
+  .table-scroll{overflow-x:auto; border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow);}
+  table{border-collapse:collapse; width:100%; min-width:720px; background:var(--panel);}
+  thead th{
+    font-family:'Oswald',sans-serif; font-size:11.5px; font-weight:600; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--ink-dim); text-align:center; padding:10px 6px; border-bottom:1px solid var(--line); white-space:nowrap;
+  }
+  thead th:first-child{text-align:left; padding-left:14px;}
+  tbody td{padding:7px 6px; text-align:center; border-bottom:1px solid var(--line); font-size:12.5px;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody td:first-child{text-align:left; padding-left:14px;}
+  .rowname{display:flex; align-items:center; gap:8px; font-weight:600; white-space:nowrap;}
+  .rowname .team-tag{
+    font-family:'Oswald',sans-serif; font-size:10px; font-weight:700; padding:1px 6px; border-radius:5px; letter-spacing:.03em;
+  }
+  .pascode{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ink-dim);}
+  .cell{
+    display:inline-flex; width:24px; height:22px; align-items:center; justify-content:center;
+    border-radius:6px; font-size:12px; font-weight:700; font-variant-numeric:tabular-nums;
+  }
+  .cell-td{cursor:pointer; transition:transform .08s;}
+  .cell-td:hover .cell{outline:2px solid var(--navy); outline-offset:1px;}
+  .cell-td:active{transform:scale(.92);}
+  tfoot td{padding:9px 6px; text-align:center; font-weight:700; font-family:'Oswald',sans-serif; font-size:13px; font-variant-numeric:tabular-nums; border-top:2px solid var(--line);}
+  tfoot td:first-child{text-align:left; padding-left:14px; font-family:'Inter',sans-serif; font-size:12px; color:var(--ink-dim); font-weight:600;}
+
+  .legend{display:flex; gap:16px; flex-wrap:wrap; margin-top:12px; font-size:12.5px; color:var(--ink-dim);}
+  .legend span{display:inline-flex; align-items:center; gap:6px;}
+  .legend .sw{width:12px; height:12px; border-radius:4px; display:inline-block;}
+
+  footer{margin-top:36px; padding-top:16px; border-top:1px solid var(--line); font-size:12px; color:var(--ink-dim);}
+
+  @media (max-width:640px){
+    .board{grid-template-columns:1fr;}
+    .stats{flex-wrap:nowrap; overflow-x:auto; padding-bottom:2px;}
+    .stat{flex:none; min-width:120px;}
+  }
+</style>
+
+<div class="wrap">
+  <div class="header">
+    <div class="eyebrow">Chaam · Fase 2 · 2026/2027</div>
+    <h1 class="title">JO8 Teamindeling</h1>
+    <p class="sub">Spelerspassen, beschikbaarheid per speeldatum en niveau, om JO8-1 te verdelen in twee gelijkwaardige teams (JO8-1 en JO8-2). Beoordeel spelers met sterren en sleep of balanceer automatisch.</p>
+    <div class="stats" id="stats"></div>
+    <div class="io-row">
+      <button class="io-btn" id="exportBtn" type="button">⬇ Exporteren</button>
+      <button class="io-btn" id="importBtn" type="button">⬆ Importeren</button>
+      <span class="hint">Bewaar je wijzigingen als bestand, of laad ze weer in op een ander apparaat/browser</span>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" hidden>
+    <div class="modal" id="exportModal" hidden>
+      <div class="modal-head"><h3>Gegevens exporteren</h3><button class="modal-close" data-close type="button">✕</button></div>
+      <p class="modal-hint">Download dit bestand, of kopieer de tekst — bewaar het en gebruik "Importeren" om het later (of op een ander apparaat) weer in te laden.</p>
+      <textarea class="modal-textarea" id="exportText" readonly></textarea>
+      <div class="modal-actions">
+        <button class="io-btn primary" id="downloadJsonBtn" type="button">⬇ Download .json</button>
+        <button class="io-btn" id="copyJsonBtn" type="button">Kopieer naar klembord</button>
+        <span class="modal-status" id="exportStatus"></span>
+      </div>
+    </div>
+    <div class="modal" id="importModal" hidden>
+      <div class="modal-head"><h3>Gegevens importeren</h3><button class="modal-close" data-close type="button">✕</button></div>
+      <p class="modal-hint">Kies een eerder geëxporteerd .json-bestand, of plak de tekst hieronder. Dit vervangt de huidige teamindeling, niveaus en beschikbaarheid in deze browser.</p>
+      <input type="file" id="importFile" accept="application/json,.json" />
+      <textarea class="modal-textarea" id="importText" placeholder="…of plak hier de geëxporteerde JSON-tekst"></textarea>
+      <div class="modal-actions">
+        <button class="io-btn primary" id="applyImportBtn" type="button">Importeer en toepassen</button>
+        <span class="modal-status" id="importStatus"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="filters" id="filters"></div>
+
+  <section>
+    <div class="section-head">
+      <h2>Teamindeling</h2>
+      <span class="hint">Sleep een speler naar het andere team, of tik op de knop (handig op mobiel)</span>
+    </div>
+    <div class="scenario-panel">
+      <div class="scenario-row">
+        <span class="scenario-label">Meisjes</span>
+        <div class="seg" id="segGirls"></div>
+      </div>
+      <div class="scenario-row">
+        <span class="scenario-label">Leeftijd</span>
+        <div class="seg" id="segAge"></div>
+      </div>
+      <div class="scenario-row">
+        <span class="scenario-label">Niveau</span>
+        <div class="seg" id="segLevel"></div>
+      </div>
+      <div class="board-actions">
+        <button class="balance-btn" id="balanceBtn" type="button">⚖ Verdeel volgens dit scenario</button>
+        <span class="balance-note" id="scenarioNote">Zet spelers op "Beginner"/"Ervaren" voor het beste resultaat.</span>
+      </div>
+    </div>
+    <div class="board" id="board"></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Per wedstrijd</h2>
+      <span class="hint">Klik een speeldatum aan om te zien wie er die dag wel/niet kan</span>
+    </div>
+    <div class="match-tabs" id="matchTabs"></div>
+    <div id="matchView"></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Beschikbaarheid — Fase 2</h2>
+      <span class="hint">Klik op een vakje om te rouleren: aanwezig → afwezig → onbekend → geen gegevens</span>
+    </div>
+    <div class="table-scroll">
+      <table id="availTable"></table>
+    </div>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--ok)"></i>Aanwezig</span>
+      <span><i class="sw" style="background:var(--bad)"></i>Afwezig</span>
+      <span><i class="sw" style="background:var(--unk)"></i>Onbekend</span>
+      <span><i class="sw" style="background:var(--nodata)"></i>Geen gegevens</span>
+    </div>
+  </section>
+
+  <footer>JO8 · Chaam — teamindeling gebaseerd op de spelerspassen en het beschikbaarheidsschema Fase 2 (bekend vanaf 4 oktober). Wijzigingen in teamindeling worden alleen in deze browser onthouden.</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var DATES = ["31 okt","7 nov","14 nov","21 nov","28 nov","5 dec","12 dec"];
+  // status codes: A = aanwezig, X = afwezig, U = onbekend (?), N = geen data
+  var PLAYERS = [
+    {id:"teun",     naam:"Teun Hamels",        cat:"O8", pas:"TJRB18I", team:"JO8-1", geb:"13-10-2019", av:["A","A","A","A","A","A","A"]},
+    {id:"jip",      naam:"Jip Künzel",         cat:"O8", pas:"TPPM28Q", team:"JO8-1", geb:"05-01-2019", av:["A","A","A","A","A","A","A"]},
+    {id:"fedde",    naam:"Fedde van der Lugt", cat:"O8", pas:"TKYK36P", team:"JO8-1", geb:"02-01-2019", av:["A","A","A","A","A","X","A"]},
+    {id:"niek",     naam:"Niek Stoffelen",     cat:"O8", pas:"TPBV276", team:"JO8-1", geb:"18-01-2019", av:["A","A","X","A","A","X","A"]},
+    {id:"bram",     naam:"Bram Patist",        cat:"O8", pas:"TQLC13J", team:"JO8-1", geb:"30-04-2019", av:["A","X","A","A","X","X","A"]},
+    {id:"olivier",  naam:"Olivier Mermans",    cat:"O8", pas:"TQQN32C", team:"JO8-1", geb:"15-04-2019", av:["A","A","A","A","A","A","A"]},
+    {id:"benjamin", naam:"Benjamin Verstrae…", cat:"O8", pas:"TKJL05D", team:"JO8-1", geb:"22-07-2019", av:["N","N","N","N","N","N","N"]},
+    {id:"lis",      naam:"Lis Moelands",       cat:"O9M", pas:"TNQP10P", team:"JO8-1", geb:"14-11-2018", av:["X","A","X","A","A","A","A"]},
+    {id:"jytte",    naam:"Jytte Dierckx",      cat:"O9M", pas:"TNXY55O", team:"JO8-1", geb:"21-03-2019", av:["A","A","X","A","A","A","A"]},
+
+    {id:"thomas",   naam:"Thomas Hoogsteder",  cat:"O8", pas:"TDWS88P", team:"JO8-2", geb:"20-03-2019", av:["X","A","A","A","A","A","A"]},
+    {id:"julesvl",  naam:"Jules van Loon",     cat:"O8", pas:"TLNH225", team:"JO8-2", geb:"23-05-2019", av:["A","X","A","A","A","X","A"]},
+    {id:"jay",      naam:"Jay Yoffe",          cat:"O8", pas:"TPRT63E", team:"JO8-2", geb:"04-04-2019", av:["A","X","A","A","A","A","A"]},
+    {id:"julesd",   naam:"Jules Degenaar",     cat:"O8", pas:"TNVS52B", team:"JO8-2", geb:"12-02-2019", av:["A","A","A","A","A","X","X"]},
+    {id:"eden",     naam:"Eden Dekker",        cat:"O8", pas:"TKQN19F", team:"JO8-2", geb:"22-04-2019", av:["A","A","A","A","A","X","A"]},
+    {id:"rick",     naam:"Rick Koijen",        cat:"O8", pas:"",        team:"JO8-2", geb:"19-08-2019", av:["N","N","N","N","N","N","N"]},
+    {id:"jaimy",    naam:"Jaimy Beerens",      cat:"O8", pas:"TRBH663", team:"JO8-2", geb:"05-07-2019", av:["A","A","A","A","A","A","A"]},
+    {id:"lien",     naam:"Lien Roelen",        cat:"O9M", pas:"TPRD02D", team:"JO8-2", geb:"10-09-2019", av:["A","A","A","X","A","A","A"]},
+    {id:"veronica", naam:"Veronica Kusters",   cat:"O9M", pas:"TPPM30V", team:"JO8-2", geb:"11-06-2019", av:["A","X","A","A","A","A","X"]},
+
+    {id:"james",    naam:"James Schram",       cat:"O8", pas:"TNQP13I", team:"Onbekend", geb:"22-03-2019", av:["U","U","U","U","U","U","U"]}
+  ];
+
+  var CAT_LABEL = {O8:"Onder 8", O9M:"Onder 9 Meiden", "?":"Onbekend"};
+  var TEAM_ORDER = ["JO8-1","JO8-2","Onbekend"];
+  var TEAM_LABEL = {"JO8-1":"JO8-1","JO8-2":"JO8-2","Onbekend":"Nog niet ingedeeld"};
+  var STATUS_LABEL = {A:"Aanwezig", X:"Afwezig", U:"Onbekend", N:"Geen gegevens"};
+  var STATUS_VAR = {A:"--ok", X:"--bad", U:"--unk", N:"--nodata"};
+  var STATUS_SOFT = {A:"--ok-soft", X:"--bad-soft", U:"--unk-soft", N:"--nodata-soft"};
+  var STATUS_CHAR = {A:"✓", X:"✕", U:"?", N:"–"};
+
+  var STORAGE_KEY = "jo8-teamindeling-v1";
+  var LEVEL_VALUE = {beginner:1, ervaren:2};
+  var LEVEL_LABEL = {beginner:"Beginner", ervaren:"Ervaren"};
+  var DEFAULT_LEVEL_VALUE = 1.5; // nog niet beoordeeld: telt neutraal mee
+  var state = {teamOf:{}, niveauOf:{}, avOf:{}, filter:"Alle", matchIndex:0, scenario:{girlsTogether:false, ageTogether:false, stackBest:false}};
+  var STATUS_CYCLE = ["A","X","U","N"];
+  function avKey(p, i){ return p.id + "_" + i; }
+  function avStatus(p, i){
+    var k = avKey(p, i);
+    return Object.prototype.hasOwnProperty.call(state.avOf, k) ? state.avOf[k] : p.av[i];
+  }
+  function cycleAv(id, i){
+    var p = PLAYERS.filter(function(x){ return x.id === id; })[0];
+    if(!p) return;
+    var cur = avStatus(p, i);
+    var next = STATUS_CYCLE[(STATUS_CYCLE.indexOf(cur) + 1) % STATUS_CYCLE.length];
+    state.avOf[avKey(p, i)] = next;
+    saveState();
+    renderMatchTabs();
+    renderMatchView();
+    renderTable();
+  }
+  function isOlderCategory(p){ return p.cat.indexOf("O9") === 0; } // Onder 9 (nu: O9M) speelt een leeftijdsklasse hoger dan Onder 8
+
+  function loadState(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if(raw){
+        var saved = JSON.parse(raw);
+        if(saved && saved.teamOf) state.teamOf = saved.teamOf;
+        if(saved && saved.niveauOf){
+          // alleen geldige niveaus overnemen (oudere versie gebruikte een 1-5 sterrenschaal)
+          Object.keys(saved.niveauOf).forEach(function(id){
+            if(LEVEL_VALUE[saved.niveauOf[id]]) state.niveauOf[id] = saved.niveauOf[id];
+          });
+        }
+        if(saved && saved.avOf) state.avOf = saved.avOf;
+      }
+    }catch(e){}
+  }
+  function saveState(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify({teamOf:state.teamOf, niveauOf:state.niveauOf, avOf:state.avOf})); }catch(e){}
+  }
+  function teamOf(p){ return state.teamOf[p.id] || p.team; }
+  function niveauOf(p){ return state.niveauOf[p.id] || null; } // "beginner" | "ervaren" | null
+  function niveauValue(p){ var n = niveauOf(p); return n ? LEVEL_VALUE[n] : DEFAULT_LEVEL_VALUE; }
+
+  function initials(naam){
+    return naam.split(" ").map(function(w){return w[0];}).join("").slice(0,2).toUpperCase();
+  }
+  function teamVar(team){
+    return team === "JO8-1" ? "--team1" : team === "JO8-2" ? "--team2" : "--team0";
+  }
+
+  function renderStats(){
+    var byTeam = {"JO8-1":0,"JO8-2":0,"Onbekend":0};
+    PLAYERS.forEach(function(p){ byTeam[teamOf(p)]++; });
+    var el = document.getElementById("stats");
+    el.innerHTML =
+      '<div class="stat"><div class="n">'+PLAYERS.length+'</div><div class="l">Spelers totaal</div></div>' +
+      '<div class="stat"><div class="n"><span class="dot" style="background:var(--team1)"></span>'+byTeam["JO8-1"]+'</div><div class="l">JO8-1</div></div>' +
+      '<div class="stat"><div class="n"><span class="dot" style="background:var(--team2)"></span>'+byTeam["JO8-2"]+'</div><div class="l">JO8-2</div></div>' +
+      '<div class="stat"><div class="n"><span class="dot" style="background:var(--team0)"></span>'+byTeam["Onbekend"]+'</div><div class="l">Nog niet ingedeeld</div></div>';
+  }
+
+  function renderFilters(){
+    var opts = ["Alle","JO8-1","JO8-2","Onbekend"];
+    var el = document.getElementById("filters");
+    el.innerHTML = "";
+    opts.forEach(function(o){
+      var b = document.createElement("button");
+      b.className = "chip" + (state.filter===o ? " active" : "");
+      b.textContent = o==="Onbekend" ? "Nog niet ingedeeld" : o;
+      b.addEventListener("click", function(){ state.filter = o; renderAll(); });
+      el.appendChild(b);
+    });
+  }
+
+  function sparkline(av){
+    return av.map(function(s){
+      return '<i style="background:var('+STATUS_VAR[s]+')" title="'+STATUS_LABEL[s]+'"></i>';
+    }).join("");
+  }
+
+  function nextTeam(t){
+    var i = TEAM_ORDER.indexOf(t);
+    return TEAM_ORDER[(i+1) % TEAM_ORDER.length];
+  }
+
+  function levelHTML(current){
+    return ["beginner","ervaren"].map(function(lvl){
+      var on = current === lvl;
+      return '<button type="button" class="'+(on ? "on-"+lvl : "")+'" data-lvl="'+lvl+'">'+LEVEL_LABEL[lvl]+'</button>';
+    }).join("");
+  }
+  function wireLevel(container, p){
+    container.querySelectorAll(".level button").forEach(function(btn){
+      btn.addEventListener("click", function(ev){
+        ev.stopPropagation();
+        var lvl = btn.dataset.lvl;
+        state.niveauOf[p.id] = (niveauOf(p) === lvl) ? null : lvl; // nogmaals klikken = wissen
+        saveState();
+        renderAll();
+      });
+    });
+  }
+
+  function teamAvgNiveau(team){
+    var list = PLAYERS.filter(function(p){ return teamOf(p) === team; });
+    if(!list.length) return null;
+    var beginners = list.filter(function(p){ return niveauOf(p) === "beginner"; }).length;
+    var ervaren = list.filter(function(p){ return niveauOf(p) === "ervaren"; }).length;
+    var sum = 0; list.forEach(function(p){ sum += niveauValue(p); });
+    return {beginners:beginners, ervaren:ervaren, onbeoordeeld:list.length-beginners-ervaren, avg:sum/list.length};
+  }
+
+  var GIRLS_OPTIONS = [
+    {v:false, label:"Verdelen"},
+    {v:true,  label:"Samen"}
+  ];
+  var AGE_OPTIONS = [
+    {v:false, label:"Verdelen"},
+    {v:true,  label:"Samen"}
+  ];
+  var LEVEL_OPTIONS = [
+    {v:false, label:"Gelijk verdelen"},
+    {v:true,  label:"Meest ervaren bij elkaar"}
+  ];
+
+  function renderSeg(containerId, options, current, onPick){
+    var el = document.getElementById(containerId);
+    el.innerHTML = "";
+    options.forEach(function(opt){
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = current === opt.v ? "active" : "";
+      b.textContent = opt.label;
+      b.addEventListener("click", function(){ onPick(opt.v); });
+      el.appendChild(b);
+    });
+  }
+
+  function buildScenarioNote(opts){
+    var parts = [];
+    parts.push(opts.girlsTogether
+      ? "Meisjes blijven samen in één team."
+      : "Meisjes worden verdeeld over beide teams.");
+    parts.push(opts.ageTogether
+      ? "De oudste spelers (Onder 9) blijven ook samen in één team."
+      : "Leeftijdscategorieën worden gemengd over beide teams.");
+    parts.push(opts.stackBest
+      ? "De meest ervaren spelers worden zo veel mogelijk in één team gezet (één ervaren, één minder ervaren team)."
+      : "De sterkte wordt zo gelijk mogelijk over beide teams verdeeld.");
+    return parts.join(" ");
+  }
+
+  function renderScenarioPanel(){
+    renderSeg("segGirls", GIRLS_OPTIONS, state.scenario.girlsTogether, function(v){
+      state.scenario.girlsTogether = v; renderScenarioPanel();
+    });
+    renderSeg("segAge", AGE_OPTIONS, state.scenario.ageTogether, function(v){
+      state.scenario.ageTogether = v; renderScenarioPanel();
+    });
+    renderSeg("segLevel", LEVEL_OPTIONS, state.scenario.stackBest, function(v){
+      state.scenario.stackBest = v; renderScenarioPanel();
+    });
+    document.getElementById("scenarioNote").textContent = buildScenarioNote(state.scenario);
+  }
+
+  function balanceTeams(){
+    var opts = state.scenario;
+    var eligible = PLAYERS.filter(function(p){ return teamOf(p) !== "Onbekend"; });
+    var n = eligible.length;
+    var cap = {"JO8-1": Math.ceil(n/2), "JO8-2": n - Math.ceil(n/2)};
+
+    var sums = {"JO8-1":0, "JO8-2":0};
+    var counts = {"JO8-1":0, "JO8-2":0};
+    function place(p, team){
+      state.teamOf[p.id] = team;
+      sums[team] += niveauValue(p);
+      counts[team]++;
+    }
+
+    // "Meisjes samen" en "Leeftijd samen" wijzen in deze selectie naar dezelfde spelers
+    // (de meisjes zijn ook de enigen in een oudere leeftijdscategorie); zodra minstens
+    // één van beide op "Samen" staat, blijft die groep bij elkaar.
+    var forceBlock = opts.girlsTogether || opts.ageTogether;
+    var blockGroup = eligible.filter(function(p){
+      return (opts.girlsTogether && p.cat === "O9M") || (opts.ageTogether && isOlderCategory(p));
+    });
+
+    var pool;
+    if(forceBlock && blockGroup.length){
+      var block = cap["JO8-1"] - counts["JO8-1"] >= blockGroup.length ? "JO8-1" : "JO8-2";
+      blockGroup.forEach(function(p){ place(p, block); });
+      var blockIds = blockGroup.map(function(p){ return p.id; });
+      pool = eligible.filter(function(p){ return blockIds.indexOf(p.id) === -1; });
+    } else {
+      pool = eligible.slice();
+    }
+
+    var sorted = pool.slice().sort(function(a,b){ return niveauValue(b) - niveauValue(a); });
+
+    if(opts.stackBest){
+      // sterkste spelers zo veel mogelijk samen in het team met de meeste ruimte
+      var remain = {"JO8-1": cap["JO8-1"]-counts["JO8-1"], "JO8-2": cap["JO8-2"]-counts["JO8-2"]};
+      var primary = remain["JO8-1"] >= remain["JO8-2"] ? "JO8-1" : "JO8-2";
+      var secondary = primary === "JO8-1" ? "JO8-2" : "JO8-1";
+      sorted.forEach(function(p){
+        var target = counts[primary] < cap[primary] ? primary : secondary;
+        place(p, target);
+      });
+    } else {
+      // zo gelijk mogelijke sterkte: steeds de sterkste nog te plaatsen speler naar het zwakste team
+      sorted.forEach(function(p){
+        var canA = counts["JO8-1"] < cap["JO8-1"], canB = counts["JO8-2"] < cap["JO8-2"];
+        var target;
+        if(canA && canB) target = sums["JO8-1"] <= sums["JO8-2"] ? "JO8-1" : "JO8-2";
+        else target = canA ? "JO8-1" : "JO8-2";
+        place(p, target);
+      });
+    }
+
+    saveState();
+    renderAll();
+  }
+
+  function renderBoard(){
+    var board = document.getElementById("board");
+    board.innerHTML = "";
+    var buckets = state.filter === "Alle" ? ["JO8-1","JO8-2"] : [state.filter === "Onbekend" ? "Onbekend" : state.filter];
+    // Always show onbekend bucket too when relevant and not already alone
+    if(state.filter === "Alle"){
+      var teamCounts = {}; PLAYERS.forEach(function(p){teamCounts[teamOf(p)] = (teamCounts[teamOf(p)]||0)+1;});
+      if(teamCounts["Onbekend"]) buckets.push("Onbekend");
+    }
+
+    var stats1 = teamAvgNiveau("JO8-1"), stats2 = teamAvgNiveau("JO8-2");
+    var imbalanced = (stats1 && stats2 && Math.abs(stats1.avg-stats2.avg) >= 0.4);
+
+    buckets.forEach(function(team){
+      var list = PLAYERS.filter(function(p){ return teamOf(p) === team; });
+      var stats = teamAvgNiveau(team);
+      var bucket = document.createElement("div");
+      bucket.className = "board-bucket";
+
+      var head = document.createElement("div");
+      head.className = "bucket-head";
+      head.innerHTML =
+        '<span class="bucket-name"><span class="dot" style="background:var('+teamVar(team)+')"></span>'+TEAM_LABEL[team]+'</span>' +
+        '<span style="display:flex;align-items:center;gap:10px;">' +
+        (stats && team!=="Onbekend" ? '<span class="avg-badge'+(imbalanced?" off":"")+'">'+stats.ervaren+' ervaren · '+stats.beginners+' beginner</span>' : '') +
+        '<span class="bucket-count">'+list.length+' speler'+(list.length===1?"":"s")+'</span></span>';
+      bucket.appendChild(head);
+
+      var listEl = document.createElement("div");
+      listEl.className = "bucket-list";
+      listEl.dataset.team = team;
+      if(list.length === 0){
+        listEl.innerHTML = '<div class="bucket-empty">Sleep hier een speler naartoe</div>';
+      } else {
+        list.forEach(function(p){
+          var row = document.createElement("div");
+          row.className = "player";
+          row.draggable = true;
+          row.dataset.id = p.id;
+          row.innerHTML =
+            '<span class="grip">⠿</span>' +
+            '<span class="avatar" style="background:var('+teamVar(team)+')">'+initials(p.naam)+'</span>' +
+            '<span class="name">'+p.naam+(p.geb ? '<span class="cat">'+p.geb+'</span>' : '')+'</span>' +
+            '<span class="level" draggable="false">'+levelHTML(niveauOf(p))+'</span>' +
+            '<button class="move-btn" type="button" draggable="false">→ '+TEAM_LABEL[nextTeam(team)]+'</button>';
+
+          wireLevel(row, p);
+
+          row.addEventListener("dragstart", function(ev){
+            ev.dataTransfer.setData("text/plain", p.id);
+            ev.dataTransfer.effectAllowed = "move";
+            row.classList.add("dragging");
+          });
+          row.addEventListener("dragend", function(){
+            row.classList.remove("dragging");
+          });
+
+          row.querySelector(".move-btn").addEventListener("click", function(ev){
+            ev.stopPropagation();
+            state.teamOf[p.id] = nextTeam(team);
+            saveState();
+            renderAll();
+          });
+          listEl.appendChild(row);
+        });
+      }
+
+      listEl.addEventListener("dragover", function(ev){
+        ev.preventDefault();
+        ev.dataTransfer.dropEffect = "move";
+        listEl.classList.add("drag-over");
+      });
+      listEl.addEventListener("dragleave", function(){
+        listEl.classList.remove("drag-over");
+      });
+      listEl.addEventListener("drop", function(ev){
+        ev.preventDefault();
+        listEl.classList.remove("drag-over");
+        var id = ev.dataTransfer.getData("text/plain");
+        if(id){
+          state.teamOf[id] = team;
+          saveState();
+          renderAll();
+        }
+      });
+
+      bucket.appendChild(listEl);
+      board.appendChild(bucket);
+    });
+  }
+
+  function renderMatchTabs(){
+    var el = document.getElementById("matchTabs");
+    el.innerHTML = "";
+    DATES.forEach(function(d, i){
+      var c1 = PLAYERS.filter(function(p){ return teamOf(p)==="JO8-1" && avStatus(p,i)==="A"; }).length;
+      var c2 = PLAYERS.filter(function(p){ return teamOf(p)==="JO8-2" && avStatus(p,i)==="A"; }).length;
+      var b = document.createElement("button");
+      b.className = "match-tab" + (state.matchIndex === i ? " active" : "");
+      b.innerHTML = d +
+        '<span class="n team-counts">' +
+          '<i class="dot" style="background:var(--team1)"></i>'+c1+
+          '<i class="dot" style="background:var(--team2)"></i>'+c2+
+        '</span>';
+      b.addEventListener("click", function(){ state.matchIndex = i; renderMatchTabs(); renderMatchView(); });
+      el.appendChild(b);
+    });
+  }
+
+  function renderMatchView(){
+    var i = state.matchIndex;
+    var el = document.getElementById("matchView");
+
+    var counts = {A:0, X:0, U:0, N:0};
+    PLAYERS.forEach(function(p){ counts[avStatus(p,i)]++; });
+
+    var summary =
+      '<div class="match-summary">' +
+      '<span class="pill" style="background:var(--ok-soft);color:var(--ok)">'+counts.A+' aanwezig</span>' +
+      '<span class="pill" style="background:var(--bad-soft);color:var(--bad)">'+counts.X+' afwezig</span>' +
+      (counts.U ? '<span class="pill" style="background:var(--unk-soft);color:var(--unk)">'+counts.U+' onbekend</span>' : '') +
+      (counts.N ? '<span class="pill" style="background:var(--nodata-soft);color:var(--nodata)">'+counts.N+' geen gegevens</span>' : '') +
+      '</div>';
+
+    var teams = ["JO8-1","JO8-2","Onbekend"].filter(function(team){
+      return PLAYERS.some(function(p){ return teamOf(p) === team; });
+    });
+
+    var grid = '<div class="match-grid">' + teams.map(function(team){
+      var list = PLAYERS.filter(function(p){ return teamOf(p) === team; })
+        .slice().sort(function(a,b){ return a.naam.localeCompare(b.naam); });
+      var rows = list.map(function(p){
+        var s = avStatus(p, i);
+        return '<div class="match-row"><span class="avatar" style="width:26px;height:26px;font-size:11px;background:var('+teamVar(team)+')">'+initials(p.naam)+'</span>' +
+          '<span>'+p.naam+'</span>' +
+          '<span class="status-badge" style="background:var('+STATUS_SOFT[s]+');color:var('+STATUS_VAR[s]+')">'+STATUS_LABEL[s]+'</span></div>';
+      }).join("");
+      return '<div class="match-col"><div class="match-col-head"><span class="dot" style="background:var('+teamVar(team)+')"></span>'+TEAM_LABEL[team]+'</div>'+rows+'</div>';
+    }).join("") + '</div>';
+
+    el.innerHTML =
+      '<h3 style="font-size:16px;margin-bottom:10px;">Wedstrijd '+DATES[i]+'</h3>' +
+      summary + grid;
+  }
+
+  function renderTable(){
+    var visible = PLAYERS.filter(function(p){
+      return state.filter === "Alle" || teamOf(p) === state.filter;
+    }).slice().sort(function(a,b){
+      var ta = TEAM_ORDER.indexOf(teamOf(a)), tb = TEAM_ORDER.indexOf(teamOf(b));
+      if(ta !== tb) return ta - tb;
+      return a.naam.localeCompare(b.naam);
+    });
+
+    var thead = '<thead><tr><th>Speler</th>' + DATES.map(function(d){return '<th>'+d+'</th>';}).join("") + '</tr></thead>';
+
+    var rows = visible.map(function(p){
+      var team = teamOf(p);
+      var cells = DATES.map(function(_, i){
+        var s = avStatus(p, i);
+        return '<td class="cell-td" data-id="'+p.id+'" data-i="'+i+'"><span class="cell" style="background:var('+STATUS_SOFT[s]+');color:var('+STATUS_VAR[s]+')" title="'+STATUS_LABEL[s]+' — klik om te wijzigen">'+STATUS_CHAR[s]+'</span></td>';
+      }).join("");
+      return '<tr><td><span class="rowname">'+p.naam+
+        '<span class="team-tag" style="background:var('+teamVar(team)+'-soft);color:var('+teamVar(team)+')">'+TEAM_LABEL[team]+'</span></span>' +
+        '<div class="pascode">'+(p.geb||"—")+'</div></td>' + cells + '</tr>';
+    }).join("");
+
+    var footCells = DATES.map(function(_, i){
+      var n = visible.filter(function(p){ return avStatus(p, i) === "A"; }).length;
+      return '<td>'+n+'</td>';
+    }).join("");
+    var tfoot = '<tfoot><tr><td>Aantal aanwezig</td>' + footCells + '</tr></tfoot>';
+
+    document.getElementById("availTable").innerHTML = thead + '<tbody>'+rows+'</tbody>' + tfoot;
+  }
+
+  function renderAll(){
+    renderStats();
+    renderFilters();
+    renderScenarioPanel();
+    renderBoard();
+    renderMatchTabs();
+    renderMatchView();
+    renderTable();
+  }
+
+  document.getElementById("balanceBtn").addEventListener("click", balanceTeams);
+
+  // ---- export / import ----
+  function openModal(id){
+    document.getElementById("modalBackdrop").hidden = false;
+    document.getElementById(id).hidden = false;
+  }
+  function closeModals(){
+    document.getElementById("modalBackdrop").hidden = true;
+    document.getElementById("exportModal").hidden = true;
+    document.getElementById("importModal").hidden = true;
+  }
+  document.getElementById("modalBackdrop").addEventListener("click", function(ev){
+    if(ev.target.id === "modalBackdrop") closeModals();
+  });
+  document.querySelectorAll("[data-close]").forEach(function(btn){
+    btn.addEventListener("click", closeModals);
+  });
+
+  function exportPayload(){
+    return {
+      _bron: "JO8 Teamindeling",
+      _geexporteerdOp: new Date().toISOString(),
+      teamOf: state.teamOf,
+      niveauOf: state.niveauOf,
+      avOf: state.avOf
+    };
+  }
+
+  document.getElementById("exportBtn").addEventListener("click", function(){
+    document.getElementById("exportText").value = JSON.stringify(exportPayload(), null, 2);
+    document.getElementById("exportStatus").textContent = "";
+    document.getElementById("exportStatus").className = "modal-status";
+    openModal("exportModal");
+  });
+
+  document.getElementById("downloadJsonBtn").addEventListener("click", function(){
+    var text = document.getElementById("exportText").value;
+    var stamp = new Date().toISOString().slice(0,10);
+    var filename = "jo8-teamindeling-"+stamp+".json";
+    var statusEl = document.getElementById("exportStatus");
+
+    function browserDownload(){
+      try{
+        var blob = new Blob([text], {type:"application/json"});
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+        statusEl.className = "modal-status";
+        statusEl.textContent = "Download gestart.";
+      }catch(e){
+        statusEl.className = "modal-status err";
+        statusEl.textContent = "Downloaden werkt hier niet — gebruik \"Kopieer naar klembord\".";
+      }
+    }
+
+    // In de Claude-artifactviewer moet een download via de downloads-capability,
+    // die de kijker eerst om bevestiging vraagt. Zelf gehost (bv. GitHub Pages)
+    // bestaat window.claude niet en gebruiken we gewoon een normale browserdownload.
+    if(window.claude && typeof window.claude.use === "function"){
+      window.claude.use("downloads").then(function(downloads){
+        if(!downloads){ browserDownload(); return; }
+        downloads.save({filename: filename, data: text}).then(function(){
+          statusEl.className = "modal-status";
+          statusEl.textContent = "Bestand opgeslagen.";
+        }, function(err){
+          if(err && err.code === "declined"){
+            statusEl.className = "modal-status err";
+            statusEl.textContent = "Download geannuleerd.";
+          } else {
+            browserDownload();
+          }
+        });
+      }, browserDownload);
+    } else {
+      browserDownload();
+    }
+  });
+
+  document.getElementById("copyJsonBtn").addEventListener("click", function(){
+    var text = document.getElementById("exportText").value;
+    var statusEl = document.getElementById("exportStatus");
+    function ok(){ statusEl.className = "modal-status"; statusEl.textContent = "Gekopieerd naar klembord."; }
+    function fail(){
+      statusEl.className = "modal-status err";
+      statusEl.textContent = "Kopiëren mislukt — selecteer de tekst handmatig.";
+    }
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(ok, function(){
+          var ta = document.getElementById("exportText");
+          ta.select();
+          try{ document.execCommand("copy") ? ok() : fail(); }catch(e){ fail(); }
+        });
+      } else {
+        var ta = document.getElementById("exportText");
+        ta.select();
+        try{ document.execCommand("copy") ? ok() : fail(); }catch(e){ fail(); }
+      }
+    }catch(e){ fail(); }
+  });
+
+  document.getElementById("importBtn").addEventListener("click", function(){
+    document.getElementById("importText").value = "";
+    document.getElementById("importFile").value = "";
+    document.getElementById("importStatus").textContent = "";
+    document.getElementById("importStatus").className = "modal-status";
+    openModal("importModal");
+  });
+
+  document.getElementById("importFile").addEventListener("change", function(ev){
+    var file = ev.target.files && ev.target.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(){ document.getElementById("importText").value = reader.result; };
+    reader.onerror = function(){
+      document.getElementById("importStatus").className = "modal-status err";
+      document.getElementById("importStatus").textContent = "Kon het bestand niet lezen.";
+    };
+    reader.readAsText(file);
+  });
+
+  document.getElementById("applyImportBtn").addEventListener("click", function(){
+    var statusEl = document.getElementById("importStatus");
+    var raw = document.getElementById("importText").value.trim();
+    if(!raw){
+      statusEl.className = "modal-status err";
+      statusEl.textContent = "Kies eerst een bestand of plak de JSON-tekst.";
+      return;
+    }
+    var data;
+    try{ data = JSON.parse(raw); }
+    catch(e){
+      statusEl.className = "modal-status err";
+      statusEl.textContent = "Dit is geen geldige JSON — controleer of je het hele bestand hebt geplakt.";
+      return;
+    }
+    var validIds = PLAYERS.map(function(p){ return p.id; });
+    var newTeamOf = {}, newNiveauOf = {}, newAvOf = {};
+    if(data.teamOf) Object.keys(data.teamOf).forEach(function(id){
+      if(validIds.indexOf(id) !== -1 && TEAM_ORDER.indexOf(data.teamOf[id]) !== -1) newTeamOf[id] = data.teamOf[id];
+    });
+    if(data.niveauOf) Object.keys(data.niveauOf).forEach(function(id){
+      if(validIds.indexOf(id) !== -1 && LEVEL_VALUE[data.niveauOf[id]]) newNiveauOf[id] = data.niveauOf[id];
+    });
+    if(data.avOf) Object.keys(data.avOf).forEach(function(key){
+      if(STATUS_CYCLE.indexOf(data.avOf[key]) !== -1) newAvOf[key] = data.avOf[key];
+    });
+
+    state.teamOf = newTeamOf;
+    state.niveauOf = newNiveauOf;
+    state.avOf = newAvOf;
+    saveState();
+    renderAll();
+
+    statusEl.className = "modal-status";
+    statusEl.textContent = "Geïmporteerd! De teamindeling, niveaus en beschikbaarheid zijn bijgewerkt.";
+    setTimeout(closeModals, 900);
+  });
+
+  document.getElementById("availTable").addEventListener("click", function(ev){
+    var td = ev.target.closest ? ev.target.closest(".cell-td") : null;
+    if(!td) return;
+    cycleAv(td.dataset.id, parseInt(td.dataset.i, 10));
+  });
+
+  loadState();
+  renderAll();
+})();
+</script>
