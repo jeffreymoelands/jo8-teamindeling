@@ -267,6 +267,25 @@
     font-family:'Oswald',sans-serif; font-size:13px; font-weight:600; padding:8px 14px; border-radius:10px;
     display:flex; align-items:center; gap:8px;
   }
+
+  /* doel: 7 spelers per team */
+  .target-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;}
+  .target-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow);
+    padding:14px; display:flex; flex-direction:column; gap:10px;
+  }
+  .target-card-head{display:flex; align-items:baseline; justify-content:space-between; gap:8px;}
+  .target-card-name{font-family:'Oswald',sans-serif; font-weight:700; font-size:14px; display:flex; align-items:center; gap:8px;}
+  .target-card-count{font-family:'Oswald',sans-serif; font-weight:700; font-size:20px; font-variant-numeric:tabular-nums;}
+  .target-card-count small{font-size:12px; font-weight:500; color:var(--ink-dim);}
+  .target-dots{display:flex; gap:5px; flex-wrap:wrap;}
+  .target-dots i{width:16px; height:16px; border-radius:5px; display:block; flex:none;}
+  .target-status{
+    font-family:'Oswald',sans-serif; font-size:12px; font-weight:600; padding:6px 10px; border-radius:8px;
+    display:inline-flex; align-items:center; gap:6px; align-self:flex-start;
+  }
+  @media (max-width:640px){ .target-grid{grid-template-columns:1fr;} }
+
   .match-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
   .match-col{background:var(--panel); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow); overflow:hidden;}
   .match-col-head{padding:11px 14px; border-bottom:1px solid var(--line); font-family:'Oswald',sans-serif; font-weight:700; font-size:14px; display:flex; align-items:center; gap:8px;}
@@ -428,6 +447,23 @@
   "use strict";
 
   var DATES = ["31 okt","7 nov","14 nov","21 nov","28 nov","5 dec","12 dec"];
+  var TEAM_TARGET = 7; // ideaal aantal aanwezige spelers per team, per wedstrijd
+
+  function targetStatus(count){
+    if(count >= TEAM_TARGET) return {var:"--ok", soft:"--ok-soft", label:"Genoeg spelers"};
+    if(count >= TEAM_TARGET - 2) return {var:"--unk", soft:"--unk-soft", label:"Nog " + (TEAM_TARGET - count) + " nodig"};
+    return {var:"--bad", soft:"--bad-soft", label:"Te weinig — nog " + (TEAM_TARGET - count) + " nodig"};
+  }
+  function targetDots(count){
+    var out = "";
+    for(var d=1; d<=Math.max(TEAM_TARGET, count); d++){
+      var filled = d <= count;
+      var over = d > TEAM_TARGET;
+      var color = !filled ? "var(--nodata-soft)" : over ? "var(--navy)" : "var(--ok)";
+      out += '<i style="background:'+color+'"></i>';
+    }
+    return out;
+  }
   // status codes: A = aanwezig, X = afwezig, U = onbekend (?), N = geen data
   var PLAYERS = [
     {id:"teun",     naam:"Teun Hamels",        cat:"O8", pas:"TJRB18I", team:"JO8-1", geb:"13-10-2019", niveau:"ervaren",  av:["A","A","A","A","A","A","A"]},
@@ -791,12 +827,13 @@
     DATES.forEach(function(d, i){
       var c1 = PLAYERS.filter(function(p){ return teamOf(p)==="JO8-1" && avStatus(p,i)==="A"; }).length;
       var c2 = PLAYERS.filter(function(p){ return teamOf(p)==="JO8-2" && avStatus(p,i)==="A"; }).length;
+      var t1 = targetStatus(c1), t2 = targetStatus(c2);
       var b = document.createElement("button");
       b.className = "match-tab" + (state.matchIndex === i ? " active" : "");
       b.innerHTML = d +
         '<span class="n team-counts">' +
-          '<i class="dot" style="background:var(--team1)"></i>'+c1+
-          '<i class="dot" style="background:var(--team2)"></i>'+c2+
+          '<i class="dot" style="background:var(--team1)"></i><span style="color:var('+t1.var+')">'+c1+'</span>' +
+          '<i class="dot" style="background:var(--team2)"></i><span style="color:var('+t2.var+')">'+c2+'</span>' +
         '</span>';
       b.addEventListener("click", function(){ state.matchIndex = i; renderMatchTabs(); renderMatchView(); });
       el.appendChild(b);
@@ -809,6 +846,19 @@
 
     var counts = {A:0, X:0, U:0, N:0};
     PLAYERS.forEach(function(p){ counts[avStatus(p,i)]++; });
+
+    var targetGrid = '<div class="target-grid">' + ["JO8-1","JO8-2"].map(function(team){
+      var c = PLAYERS.filter(function(p){ return teamOf(p) === team && avStatus(p,i) === "A"; }).length;
+      var t = targetStatus(c);
+      return '<div class="target-card">' +
+        '<div class="target-card-head">' +
+          '<span class="target-card-name"><span class="dot" style="background:var('+teamVar(team)+')"></span>'+TEAM_LABEL[team]+'</span>' +
+          '<span class="target-card-count">'+c+' <small>/ '+TEAM_TARGET+' aanwezig</small></span>' +
+        '</div>' +
+        '<div class="target-dots">'+targetDots(c)+'</div>' +
+        '<span class="target-status" style="background:var('+t.soft+');color:var('+t.var+')">'+(c >= TEAM_TARGET ? "✓" : "⚠")+' '+t.label+'</span>' +
+      '</div>';
+    }).join("") + '</div>';
 
     var summary =
       '<div class="match-summary">' +
@@ -839,7 +889,7 @@
         '<h3 style="font-size:16px;">Wedstrijd '+DATES[i]+'</h3>' +
         '<button class="io-btn primary" id="waBtn" type="button">📋 WhatsApp-bericht</button>' +
       '</div>' +
-      summary + grid;
+      targetGrid + summary + grid;
 
     document.getElementById("waBtn").addEventListener("click", function(){
       openWhatsappModal(i);
